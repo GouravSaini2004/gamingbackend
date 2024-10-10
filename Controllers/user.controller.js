@@ -71,8 +71,8 @@ exports.verify_email = async(req, res)=>{
         // Save the user to the database
         await newUser.save();
         // const { password: newUserPassword, transactionHistory, ...userWithoutSensitiveData } = newUser.toObject();
-        const redirectUrl = `https://gamekarao.vercel.app/login`;
-        return res.redirect(301, redirectUrl);
+        // const redirectUrl = `https://gamekarao.vercel.app/login`;
+        return res.send('Email verifyed. Go back on website and Login.')
     } catch (error) {
         return res.status(500).json({ msg: "Server error. Please try again.", success: false });
     }
