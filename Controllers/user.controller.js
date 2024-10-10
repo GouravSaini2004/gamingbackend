@@ -1,6 +1,8 @@
 const User = require("../Models/user.model");
 const CryptoJS = require('crypto-js');
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const transporter = require("../Helpers/nodemailer")
 
 exports.register = async (req, res) => {
     const { name, email, password } = req.body;
@@ -20,24 +22,62 @@ exports.register = async (req, res) => {
         // Hash the password before storing it
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Create a new user
-        const newUser = new User({
-            name,
-            email,
-            password: hashedPassword, // Store the hashed password
-        });
+        const jwttoken = jwt.sign(
+            { name, email, hashedPassword }, // Payload
+            "GouravSaini468728"
+        );
+        const verificationLink = `https://gamingbackend-dkf6.onrender.com/user/verify_email?token=${jwttoken}`
+        const mailOptions = {
+            from: "mrgoravsainimrt@gmail.com",
+            to: email,
+            subject: 'Email Verification',
+            text: `Please verify your email by clicking on the following link: ${verificationLink}`,
+        };
 
-        // Save the user to the database
-        await newUser.save();
-        const { password: newUserPassword, transactionHistory, ...userWithoutSensitiveData } = newUser.toObject();
+        await transporter.sendMail(mailOptions);
 
         // Send a success response
-        return res.status(201).json({ msg: "User registered successfully!", success: true , userWithoutSensitiveData});
+        return res.status(201).json({ msg: "Email sent successfully!", success: true});
     } catch (error) {
         console.error("Error during registration:", error);
         return res.status(500).json({ msg: "Server error. Please try again.", success: false });
     }
 };
+
+exports.verify_email = async(req, res)=>{
+    const { token } = req.query;
+
+    if (!token) {
+        return res.status(401).json({ msg: "Token is required.", success: false });
+    }
+
+    try {
+        const decoded = jwt.verify(token,"GouravSaini468728");
+        const email = decoded.email
+        const name = decoded.name
+        const password = decoded.hashedPassword
+
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(401).json({ msg: "User already exists. please login.", success: false });
+        }
+        //  Create a new user
+         const newUser = new User({
+            name,
+            email,
+            password // Store the hashed password
+        });
+
+        // Save the user to the database
+        await newUser.save();
+        // const { password: newUserPassword, transactionHistory, ...userWithoutSensitiveData } = newUser.toObject();
+        const redirectUrl = `https://gamekarao.vercel.app/login`;
+        return res.redirect(301, redirectUrl);
+    } catch (error) {
+        return res.status(500).json({ msg: "Server error. Please try again.", success: false });
+    }
+
+}
 
 
 exports.login = async (req, res) => {
