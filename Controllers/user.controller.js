@@ -59,7 +59,7 @@ exports.verify_email = async(req, res)=>{
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(401).json({ msg: "User already exists. please login.", success: false });
+            return res.send('<p style="color: blue; font-size: 30px;">Your email verifyed. Go on website and login!</p>');
         }
         //  Create a new user
          const newUser = new User({
@@ -72,7 +72,7 @@ exports.verify_email = async(req, res)=>{
         await newUser.save();
         // const { password: newUserPassword, transactionHistory, ...userWithoutSensitiveData } = newUser.toObject();
         // const redirectUrl = `https://gamekarao.vercel.app/login`;
-        return res.send('Email verifyed. Go back on website and Login.')
+        return res.send('<p style="color: blue; font-size: 30px;">Email verifyed. Go back on website and Login!</p>');
     } catch (error) {
         return res.status(500).json({ msg: "Server error. Please try again.", success: false });
     }
