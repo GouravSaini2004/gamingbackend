@@ -28,7 +28,7 @@ exports.register = async (req, res) => {
         );
         const verificationLink = `https://gamingbackend-dkf6.onrender.com/user/verify_email?token=${jwttoken}`
         const mailOptions = {
-            from: "mrgoravsainimrt@gmail.com",
+            from: "gamekarao@gmail.com",
             to: email,
             subject: 'Email Verification',
             text: `Please verify your email by clicking on the following link: ${verificationLink}`,
