@@ -72,7 +72,8 @@ exports.verify_email = async(req, res)=>{
         await newUser.save();
         // const { password: newUserPassword, transactionHistory, ...userWithoutSensitiveData } = newUser.toObject();
         // const redirectUrl = `https://gamekarao.vercel.app/login`;
-        return res.send('<p style="color: blue; font-size: 30px;">Email verifyed. Go back on website and Login!</p>');
+        // return res.send('<p style="color: blue; font-size: 30px;">Email verifyed. Go back on website and Login!</p>');
+        return res.redirect('https://gamekarao.onrender.com/#/login');
     } catch (error) {
         return res.status(500).json({ msg: "Server error. Please try again.", success: false });
     }
