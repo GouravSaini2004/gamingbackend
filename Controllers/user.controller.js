@@ -26,6 +26,7 @@ exports.register = async (req, res) => {
             { name, email, hashedPassword }, // Payload
             "GouravSaini468728"
         );
+        req.token = jwttoken;
         const verificationLink = `https://gamingbackend-dkf6.onrender.com/user/verify_email?token=${jwttoken}`
         const mailOptions = {
             from: "mrgoravsainimrt@gmail.com",
@@ -46,6 +47,7 @@ exports.register = async (req, res) => {
 
 exports.verify_email = async(req, res)=>{
     const { token } = req.query;
+    console.log(req.token);
 
     if (!token) {
         return res.status(401).json({ msg: "Token is required.", success: false });
