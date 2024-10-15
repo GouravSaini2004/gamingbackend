@@ -26,7 +26,7 @@ exports.register = async (req, res) => {
             { name, email, hashedPassword }, // Payload
             "GouravSaini468728"
         );
-        req.token = jwttoken;
+        // req.token = jwttoken;
         const verificationLink = `https://gamingbackend-dkf6.onrender.com/user/verify_email?token=${jwttoken}`
         const mailOptions = {
             from: "mrgoravsainimrt@gmail.com",
@@ -47,10 +47,10 @@ exports.register = async (req, res) => {
 
 exports.verify_email = async(req, res)=>{
     const { token } = req.query;
-    console.log(req.token);
+    // console.log(req.token);
 
     if (!token) {
-        return res.status(401).json({ msg: "Token is required.", success: false });
+        return res.send('<p style="color: blue; font-size: 30px;">Invalid token. Please try again.</p>');
     }
 
     try {
@@ -163,5 +163,107 @@ exports.get_user = async (req, res) => {
     } catch (error) {
         console.error("Error fetching user:", error);
         res.status(500).json({ msg: "Server error. Please try again.", success: false });
+    }
+};
+;
+
+exports.send_otp = async (req, res) => {
+    const { email } = req.body;
+    console.log(email,req.body)
+    if (!email) {
+        return res.status(401).json({ msg: "Email is required.", success: false });
+    }
+
+    try {
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ msg: "User not found.", success: false });
+        }
+        // Generate a random 6-digit OTP
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+        // Create a JWT token that stores the OTP and email
+        const jwttoken = jwt.sign(
+            { email, otp }, // Payload containing the email and OTP
+            "GouravSaini468728", // Replace with your secret key
+            { expiresIn: '10m' } // Token expires in 10 minutes
+        );
+
+        // Email content
+        const mailOptions = {
+            from: "mrgoravsainimrt@gmail.com",
+            to: email,
+            subject: 'Your OTP for Verification',
+            text: `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`
+        };
+
+        // Send OTP via email
+        await transporter.sendMail(mailOptions);
+
+        // Send success response along with the JWT token
+        return res.status(200).json({
+            msg: "OTP sent successfully!",
+            success: true,
+            token: jwttoken // This token can be used later for verifying OTP
+        });
+
+    } catch (error) {
+        console.error("Error sending OTP:", error);
+        return res.status(500).json({ msg: "Server error. Please try again.", success: false });
+    }
+};
+
+exports.verify_otp = async (req, res) => {
+    const { token, userOtp } = req.body; // The token and OTP from the client
+
+    if (!token || !userOtp) {
+        return res.status(401).json({ msg: "Token and OTP are required.", success: false });
+    }
+
+    try {
+        // Verify and decode the token
+        const decoded = jwt.verify(token, "GouravSaini468728"); // Use your secret key
+        const { email, otp } = decoded;
+
+        // Compare the OTP from the token with the OTP provided by the user
+        if (otp === userOtp) {
+            return res.status(200).json({ msg: "OTP verified successfully!", success: true });
+        } else {
+            return res.status(400).json({ msg: "Invalid OTP.", success: false });
+        }
+    } catch (error) {
+        return res.status(401).json({ msg: "Invalid or expired token.", success: false });
+    }
+};
+
+
+exports.generate_password = async (req, res) => {
+    const { email, newPassword } = req.body;
+
+    // Validate the input
+    if (!email || !newPassword) {
+        return res.status(401).json({ msg: "Email and new password are required.", success: false });
+    }
+
+    try {
+        // Find the user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(401).json({ msg: "User not found.", success: false });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password in the database
+        user.password = hashedPassword;
+        await user.save();
+
+        // Send a success response
+        return res.status(200).json({ msg: "Password updated successfully!", success: true });
+        
+    } catch (error) {
+        console.error("Error updating password:", error);
+        return res.status(500).json({ msg: "Server error. Please try again.", success: false });
     }
 };
