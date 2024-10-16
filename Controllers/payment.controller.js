@@ -42,7 +42,7 @@ exports.add_payment = async (req, res) => {
           });
 
         // Respond with the created participant
-        return res.status(201).json({ msg: 'Payment successful', success: true });
+        return res.status(201).json({ msg: 'Payment complete successful', success: true });
     } catch (error) {
         console.error('Error adding participant:', error);
         return res.status(500).json({ msg: 'Server error', success: false });
