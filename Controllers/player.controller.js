@@ -42,10 +42,13 @@ exports.add_player = async (req, res) => {
 
 
 exports.get_players = async (req, res) => {
+    // console.log("request hit")
     try {
         // Retrieve all participants from the database
         const participants = await Participant.find().populate('user'); // Populate user details if needed
-
+        if(!participants){
+            return res.status(401).json({ msg: 'No participants found', success: false });
+        }
         // Respond with the list of participants
         return res.status(200).json({ participants, success: true });
     } catch (error) {
@@ -56,10 +59,13 @@ exports.get_players = async (req, res) => {
 
 exports.get_player = async (req, res) => {
     const id = req.params.id;
+    
     try {
         // Retrieve all participants from the database
         const participants = await Participant.find({ user: new mongoose.Types.ObjectId(id) }).populate('user'); // Use 'new' here
-
+        if(!participants){
+            return res.status(401).json({ msg: 'No participants found', success: false });
+        }
         // Respond with the list of participants
         return res.status(200).json({ participants, success: true });
     } catch (error) {
