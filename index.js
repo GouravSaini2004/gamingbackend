@@ -7,6 +7,7 @@ const cors = require("cors")
 const userRoute = require('./Routes/user.route')
 const gameRoute = require('./Routes/game.route')
 const playerRoute = require("./Routes/player.route")
+const paymentRoute = require("./Routes/payment.route")
 
 const PORT = process.env.PORT || 3000
 const app = express();
@@ -35,5 +36,6 @@ app.get('/', (req, res)=>{
 app.use('/user', userRoute);
 app.use('/player', playerRoute);
 app.use('/game', gameRoute);
+app.use('/payment', paymentRoute);
 
 app.listen(PORT,()=>(console.log(`server run at port ${PORT}`)))

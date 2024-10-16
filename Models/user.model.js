@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'admin'], // Optional: define possible roles
         default: 'user', // Default value is 'user'
     },
-    transactionHistory: [transactionSchema],
+    // transactionHistory: [transactionSchema],
 }, {
     timestamps: true,
 });

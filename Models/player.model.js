@@ -30,6 +30,11 @@ const participantSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', // Reference to the User model
         required: true,
+    },
+    status: {
+        type: String,
+        enum : ['Pending', 'Verified', 'Rejected'],
+        default: 'Pending',
     }
 }, {
     timestamps: true, // Automatically adds createdAt and updatedAt timestamps

@@ -1,8 +1,10 @@
 const User = require("../Models/user.model");
-const CryptoJS = require('crypto-js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const transporter = require("../Helpers/nodemailer")
+const dotenv = require('dotenv');
+dotenv.config();
+
 
 exports.register = async (req, res) => {
     const { name, email, password } = req.body;
@@ -24,12 +26,12 @@ exports.register = async (req, res) => {
 
         const jwttoken = jwt.sign(
             { name, email, hashedPassword }, // Payload
-            "GouravSaini468728"
+            process.env.JWT_SECRET, 
         );
         // req.token = jwttoken;
         const verificationLink = `https://gamingbackend-dkf6.onrender.com/user/verify_email?token=${jwttoken}`
         const mailOptions = {
-            from: "mrgoravsainimrt@gmail.com",
+            from: "gamekarao82@gmail.com",
             to: email,
             subject: 'Email Verification',
             text: `Please verify your email by clicking on the following link: ${verificationLink}`,
@@ -54,7 +56,7 @@ exports.verify_email = async(req, res)=>{
     }
 
     try {
-        const decoded = jwt.verify(token,"GouravSaini468728");
+        const decoded = jwt.verify(token,process.env.JWT_SECRET);
         const email = decoded.email
         const name = decoded.name
         const password = decoded.hashedPassword
@@ -169,7 +171,7 @@ exports.get_user = async (req, res) => {
 
 exports.send_otp = async (req, res) => {
     const { email } = req.body;
-    console.log(email,req.body)
+    // console.log(email,req.body)
     if (!email) {
         return res.status(401).json({ msg: "Email is required.", success: false });
     }
@@ -185,13 +187,13 @@ exports.send_otp = async (req, res) => {
         // Create a JWT token that stores the OTP and email
         const jwttoken = jwt.sign(
             { email, otp }, // Payload containing the email and OTP
-            "GouravSaini468728", // Replace with your secret key
+            process.env.JWT_SECRET, // Replace with your secret key
             { expiresIn: '10m' } // Token expires in 10 minutes
         );
 
         // Email content
         const mailOptions = {
-            from: "mrgoravsainimrt@gmail.com",
+            from: "gamekarao82@gmail.com",
             to: email,
             subject: 'Your OTP for Verification',
             text: `Your OTP for email verification is: ${otp}. It is valid for 10 minutes.`
@@ -222,7 +224,7 @@ exports.verify_otp = async (req, res) => {
 
     try {
         // Verify and decode the token
-        const decoded = jwt.verify(token, "GouravSaini468728"); // Use your secret key
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Use your secret key
         const { email, otp } = decoded;
 
         // Compare the OTP from the token with the OTP provided by the user
