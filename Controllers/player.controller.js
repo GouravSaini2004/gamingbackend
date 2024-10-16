@@ -7,6 +7,7 @@ exports.add_player = async (req, res) => {
     try {
         // Destructure data from the request body
         const { email, phoneNumber, gameId, gameTitle, user } = req.body;
+        console.log(req.body)
 
         // Validate required fields
         if (!email || !phoneNumber || !gameId || !gameTitle || !user) {
