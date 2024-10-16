@@ -13,7 +13,8 @@ exports.add_player = async (req, res) => {
         if (!email || !phoneNumber || !gameId || !gameTitle || !user) {
             return res.status(401).json({ msg: 'All fields are required', success: false });
         }
-        const userData = await User.findByOne({ email })
+        const userData = await User.findOne({ email });
+
 
         if (!userData) {
             return res.status(401).json({ msg: 'User not found', success: false });
