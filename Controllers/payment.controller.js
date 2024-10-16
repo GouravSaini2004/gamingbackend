@@ -35,11 +35,11 @@ exports.add_payment = async (req, res) => {
         // Save the participant to the database
         await text.save();
 
-        fs.unlink(req.file.path, (err) => {
-            if (err) {
-              console.error('Error deleting file:', err);
-            }
-          });
+        // fs.unlink(req.file.path, (err) => {
+        //     if (err) {
+        //       console.error('Error deleting file:', err);
+        //     }
+        //   });
 
         // Respond with the created participant
         return res.status(201).json({ msg: 'Payment successful', success: true });
