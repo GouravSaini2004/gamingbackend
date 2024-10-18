@@ -4,11 +4,11 @@ const Game = require("../Models/game.model")
 exports.add_game = async (req, res) => {
     try {
         // Destructure the data from the request body
-        const { gameImage, gameTitle, fees, maxPlayers, teamSize, gameDate, status } = req.body;
+        const { gameImage, gameTitle, fees, maxPlayers, teamSize, gameDate, status, price } = req.body;
         // console.log(fees, gameImage)
 
         // Validate required fields
-        if (!gameImage || !gameTitle || !fees || !maxPlayers || !teamSize || !gameDate) {
+        if (!gameImage || !gameTitle || !fees || !maxPlayers || !teamSize || !gameDate || !price) {
             return res.status(401).json({ msg: 'All fields are required', success: false });
         }
 
@@ -20,6 +20,7 @@ exports.add_game = async (req, res) => {
             maxPlayers,
             teamSize,
             gameDate,
+            price,
             status: status || 1, // Use the provided status or default to 1
         });
 

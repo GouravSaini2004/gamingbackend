@@ -14,6 +14,10 @@ const gameSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    price: {
+        type: Number,
+        required: true,
+    },
     maxPlayers: {
         type: Number,
         required: true,
